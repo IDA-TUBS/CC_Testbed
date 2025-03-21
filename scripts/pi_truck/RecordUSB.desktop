@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Start_USB_Recording
+Comment=Run Example Script
+Exec=/home/truck_pi/RoamingDemonstrator/scripts/pi_truck/START_USB.sh
+Icon=/home/truck_pi/RoamingDemonstrator/scripts/pi_truck/camera.png
+Terminal=true
+Type=Application

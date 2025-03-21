@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Start_DonkeyCar
+Comment=Run Example Script
+Exec=/home/truck_pi/RoamingDemonstrator/scripts/pi_truck/START_DONKEYCAR.sh
+Icon=/home/truck_pi/RoamingDemonstrator/scripts/pi_truck/exeIcon.png
+Terminal=true
+Type=Application
