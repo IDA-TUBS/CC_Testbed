@@ -37,7 +37,7 @@ target_compile_definitions(accessPointGUI_down PUBLIC BOOST_LOG_DYN_LINK LOG_ON 
 # -------------------------------- Uplink -------------------------------- #
 add_executable(accessPoint_up src/accessPoint/uplink/accessPoint_up.cpp)
 target_compile_options(accessPoint_up PUBLIC -g)
-target_link_libraries(accessPoint_up ${OpenCV_LIBS} w2rp cc_linkmonitor pthread boost_log boost_log_setup)
+target_link_libraries(accessPoint_up ${OpenCV_LIBS} w2rp cc_linkmonitor pthread Qt5::Widgets Qt5::Core boost_log boost_log_setup)
 target_compile_definitions(accessPoint_up PUBLIC BOOST_LOG_DYN_LINK LOG_ON FILE_ON CONSOLE_ON)
 
 # -------------------------------------------------------------------------- #
@@ -53,7 +53,7 @@ target_compile_definitions(mobileNode_down PUBLIC BOOST_LOG_DYN_LINK LOG_ON FILE
 
 add_executable(mobileNodeGUI_down src/mobileNode/downlink/mobileNodeGUI_down.cpp)
 target_compile_options(mobileNodeGUI_down PUBLIC -g)
-target_link_libraries(mobileNodeGUI_down ${OpenCV_LIBS} w2rp cc_linkmonitor pthread boost_log boost_log_setup)
+target_link_libraries(mobileNodeGUI_down ${OpenCV_LIBS} w2rp cc_linkmonitor pthread Qt5::Widgets Qt5::Core boost_log boost_log_setup)
 target_compile_definitions(mobileNodeGUI_down PUBLIC BOOST_LOG_DYN_LINK LOG_ON FILE_ON CONSOLE_ON)
 
 # -------------------------------- Uplink -------------------------------- #

@@ -19,7 +19,6 @@ public:
         logging_active(false),
         stopFlag(false),
         receiver{},
-        visualizer{},
         logger{}
     {
         logInfo("[APP] App started")
@@ -30,7 +29,6 @@ public:
         logging_active(img_log),
         stopFlag(false),
         receiver{},
-        visualizer{},
         logger{}
     {
         logInfo("[APP] App started")
@@ -55,13 +53,21 @@ public:
     void run()
     {    
         receiver = std::thread(&Subscriber::receive_sample, this);
-        if(gui_active)
-        {
-            visualizer = std::thread(&Subscriber::visualize_sample, this);
-        }
         if(logging_active)
         {
             logger = std::thread(&Subscriber::save_sample, this);
+        }
+    }
+
+    cv::Mat get_frame()
+    {
+        if(!visualizer_queue.empty())
+        {
+            return visualizer_queue.dequeue();
+        }
+        else
+        {
+            return cv::Mat{};
         }
     }
 
@@ -85,7 +91,6 @@ private:
     SafeQueue<std::pair<std::string, cv::Mat>> logger_queue;
 
     std::thread receiver;
-    std::thread visualizer;
     std::thread logger;
 
     void receive_sample()
@@ -123,20 +128,6 @@ private:
         }   
     }
 
-    void visualize_sample()
-    {
-        cv::Mat img;
-
-        while(!stopFlag.load())
-        {
-            img = visualizer_queue.dequeue();
-
-            // Display the image
-            cv::imshow("sub", img);
-            cv::waitKey(1);
-        }
-    }
-
     void save_sample()
     {
         std::pair<std::string, cv::Mat> item;
@@ -157,16 +148,11 @@ private:
     void join()
     {
         receiver.join();
-        if(gui_active)
-        {
-            visualizer.join();
-        }
         if(logging_active)
         {
             logger.join();
         }
     }
-
 
 };
 

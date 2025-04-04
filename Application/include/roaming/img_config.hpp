@@ -1,8 +1,8 @@
 #ifndef IMG_CONFIG_H
 #define IMG_CONFIG_H
 
-#define IMG_ROWS_DEFAULT 300
-#define IMG_COLS_DEFAULT 200
+#define IMG_ROWS_DEFAULT 200
+#define IMG_COLS_DEFAULT 300
 
 struct image_config
 {
@@ -22,6 +22,5 @@ struct image_config
         columns(c)
     {};
 };
-
 
 #endif //IMG_CONFIG_H

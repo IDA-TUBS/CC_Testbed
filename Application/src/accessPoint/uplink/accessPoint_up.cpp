@@ -13,8 +13,12 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <qt5/QtWidgets/QApplication>
+
 #include <roaming/subscriber.hpp>
+#include <roaming/uplinkWidget.hpp>
 #include <roaming/misc.hpp>
+
 
 /**
  * @brief Basic access point for the roaming demonstrator
@@ -33,19 +37,16 @@ int main(int argc, char* argv[])
     image_config img;
 
     // Check supplied arguments
-    if(argc > 1)
-    {
-        node_suffix = atoi(argv[1]);
-    }
-    if(argc > 2)
-    {
-        hb_period = std::chrono::microseconds(atoi(argv[2]));
-    }
-    if(argc > 4)
-    {
-        img = image_config(atoi(argv[3]), atoi(argv[4]));
-    }
-
+    parseArguments(
+        argc, 
+        argv, 
+        node_suffix, 
+        hb_period, 
+        img
+    );
+    
+    logInfo("Node Suffix: " << node_suffix)
+    logInfo("HB Period: " << hb_period.count())
     logInfo("Image Config: " << img.rows << ":" << img.columns)
 
 
@@ -114,17 +115,30 @@ int main(int argc, char* argv[])
     std::string setup_path = home_dir + setup_defines_path;
 
     Subscriber mySub(true, true);
-    if (mySub.init(p_id, cfg_path, setup_path, img))
+    if(mySub.init(p_id, cfg_path, setup_path, img))
     {
-        mySub.run();
+        logInfo("Subscriber initialization complete")
+    }
+    else
+    {
+        logError("Subscriber initialization failed")
+        return 0;
     }
 
-    while(true)
-    {
+    /* -------------------------------- QT Config ------------------------------- */
+    QApplication app(argc, argv);
 
-    }
+    uplinkWidget display(img.columns, img.rows);
+    display.setSubscriber(&mySub);
+    display.setLinkReader(&link_reader);
+    display.setConnectionManager(&manager);
 
-    mySub.stop();
+    display.show();
+
+    std::thread threadSub([&mySub]() { mySub.run(); });
+    app.exec();
+
+    threadSub.join();
     link_reader.stop();
 
     return 0;

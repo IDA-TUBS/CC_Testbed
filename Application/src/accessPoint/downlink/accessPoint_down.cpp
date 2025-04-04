@@ -31,19 +31,16 @@ int main(int argc, char* argv[])
     image_config img;
 
     // Check supplied arguments
-    if(argc > 1)
-    {
-        node_suffix = atoi(argv[1]);
-    }
-    if(argc > 2)
-    {
-        hb_period = std::chrono::microseconds(atoi(argv[2]));
-    }
-    if(argc > 4)
-    {
-        img = image_config(atoi(argv[3]), atoi(argv[4]));
-    }
-
+    parseArguments(
+        argc, 
+        argv, 
+        node_suffix, 
+        hb_period, 
+        img
+    );
+    
+    logInfo("Node Suffix: " << node_suffix)
+    logInfo("HB Period: " << hb_period.count())
     logInfo("Image Config: " << img.rows << ":" << img.columns)
 
     // Define ID

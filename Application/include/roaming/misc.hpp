@@ -86,4 +86,36 @@ int createLogDirectory()
     return 0;
 }
 
+/**
+ * @brief Function to parse command-line arguments
+ * 
+ * @param argc 
+ * @param argv 
+ * @param node_suffix int 
+ * @param hb_period std::chrono::microseconds
+ * @param img image_config
+ */
+void parseArguments(
+    int argc,
+    char* argv[],
+    int& node_suffix,
+    std::chrono::microseconds& hb_period,
+    image_config& img
+)
+{
+    if(argc > 1) 
+    {
+        node_suffix = std::stoi(argv[1]);
+    }
+    if(argc > 2)
+    {
+        hb_period = std::chrono::microseconds(std::stoi(argv[2]));
+    }
+    if(argc > 4)
+    {
+        img = image_config(std::stoi(argv[3]), std::stoi(argv[4]));
+    }
+}
+
+
 # endif

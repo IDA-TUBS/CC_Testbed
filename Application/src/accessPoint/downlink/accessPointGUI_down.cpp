@@ -19,8 +19,9 @@
 #include <qt5/QtCore/QTimer> // Include QTimer header
 
 #include <roaming/publisher.hpp>
-#include <roaming/linkMonitorGUI.hpp>
+#include <roaming/colorWidget.hpp>
 #include <roaming/misc.hpp>
+#include <roaming/linkMonitorWidget.hpp>
 
 /**
  * @brief Basic access point for the roaming demonstrator
@@ -31,20 +32,6 @@
  */
 int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
-
-    QWidget window;
-    window.setWindowTitle("Link Monitor");
-
-    ColorWidget *colorWidget = new ColorWidget();
-
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(colorWidget);
-
-    window.setLayout(layout);
-    window.setFixedSize(350, 120);
-    window.show();
-
     // Init Logging
     w2rp::init_console_log();
     std::string log_path = log_dir + writer_prefix;
@@ -56,19 +43,16 @@ int main(int argc, char* argv[])
     image_config img;
 
     // Check supplied arguments
-    if(argc > 1)
-    {
-        node_suffix = atoi(argv[1]);
-    }
-    if(argc > 2)
-    {
-        hb_period = std::chrono::microseconds(atoi(argv[2]));
-    }
-    if(argc > 4)
-    {
-        img = image_config(atoi(argv[3]), atoi(argv[4]));
-    }
-
+    parseArguments(
+        argc, 
+        argv, 
+        node_suffix, 
+        hb_period, 
+        img
+    );
+    
+    logInfo("Node Suffix: " << node_suffix)
+    logInfo("HB Period: " << hb_period.count())
     logInfo("Image Config: " << img.rows << ":" << img.columns)
 
     // Define ID
@@ -126,57 +110,14 @@ int main(int argc, char* argv[])
     udp::endpoint link = link_reader.init_heartbeat(temp);
     manager.init(link.address().to_string());
 
-    QTimer *timer = new QTimer(&window); // Create a timer
-    QObject::connect(timer, &QTimer::timeout, [&](){
-        // Toggle between true and false for both variables
-        static ColorWidget::linkState link0 = ColorWidget::linkState::DOWN;
-        static ColorWidget::linkState link1 = ColorWidget::linkState::DOWN;
+    /* -------------------------------- QT Config ------------------------------- */
+    QApplication app(argc, argv);
 
-        std::vector<std::string> connections = link_reader.getActiveLinks();
-        cc_linkmonitor::ConnectionManager::dataplane_pair active_link = manager.get_active_pair();
+    LinkMonitorWidget monitor;
+    monitor.setLinkReader(&link_reader);
+    monitor.setConnectionManager(&manager);
+    monitor.show();
 
-        if (connections.size() == 0)
-        {
-            link0 = ColorWidget::linkState::DOWN;
-            link1 = ColorWidget::linkState::DOWN;
-        }
-        else
-        {
-            link0 = ColorWidget::linkState::DOWN;
-            link1 = ColorWidget::linkState::DOWN;
-            for (const auto& str : connections) {
-                if (str.find("102") != std::string::npos)
-                {
-                    if(str == active_link.first)
-                    {
-                        link0 = ColorWidget::linkState::ACTIVE;
-                    }
-                    else
-                    {
-                        link0 = ColorWidget::linkState::UP;
-                    }
-                }
-
-                if (str.find("103") != std::string::npos)
-                {
-                    if(str == active_link.first)
-                    {
-                        link1 = ColorWidget::linkState::ACTIVE;
-                    }
-                    else
-                    {
-                        link1 = ColorWidget::linkState::UP;
-                    }
-                }
-            }
-        }
-
-        // Call the toggleColor method with the new values
-        colorWidget->toggleColor(link0, link1);
-    });
-
-    timer->start(1000); // Call the function every 1000 milliseconds (1 second)
-	
     std::thread threadPub([&myPub]() { myPub.run(); });
     app.exec();
 

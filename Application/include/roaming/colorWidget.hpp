@@ -1,9 +1,12 @@
+#ifndef COLORWIDGET_h
+#define COLORWIDGET_h
+
 #include <qt5/QtWidgets/QApplication>
 #include <qt5/QtWidgets/QWidget>
 #include <qt5/QtWidgets/QPushButton>
 #include <qt5/QtWidgets/QHBoxLayout>
 #include <qt5/QtGui/QPainter>
-#include <qt5/QtCore/QTimer> // Include QTimer header
+#include <qt5/QtCore/QTimer>
 
 class ColorWidget : public QWidget
 {
@@ -76,3 +79,4 @@ private:
     QColor orange = QColor(255, 165, 0); // Define custom orange color
 };
 
+#endif
